@@ -7,3 +7,4 @@
 /target/
 /*.iml
 /credentials/
+/node_modules/
