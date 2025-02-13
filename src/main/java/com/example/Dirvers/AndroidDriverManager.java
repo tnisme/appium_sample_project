@@ -1,8 +1,12 @@
 package com.example.Dirvers;
 
 import io.appium.java_client.android.AndroidDriver;
+import org.apache.commons.io.FileUtils;
+import org.json.JSONObject;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
+import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -12,16 +16,24 @@ public class AndroidDriverManager {
     public static AndroidDriver getDriver() {
         if (driver == null) {
             try {
-                DesiredCapabilities caps = new DesiredCapabilities();
-                caps.setCapability("platformName", "Android");
-                caps.setCapability("appium:deviceName", "emulator-5554");
-                caps.setCapability("appium:appPackage", "com.google.android.contacts");
-                caps.setCapability("appium:appActivity", "com.android.contacts.activities.PeopleActivity");
-                caps.setCapability("appium:automationName", "UiAutomator2");
+                File file = new File(System.getProperty("user.dir") + File.separator + "environment.json");
+                String content = FileUtils.readFileToString(file, "utf-8");
+                JSONObject env = new JSONObject(content);
+                JSONObject androidDeviceInfo = env.getJSONObject("deviceInfo").getJSONObject("android");
+                JSONObject androidAppInfo = env.getJSONObject("appInfo").getJSONObject("android");
+                JSONObject serverInfo = env.getJSONObject("serverInfo");
 
-                driver = new AndroidDriver(new URL("http://127.0.0.1:4723/"), caps);
+                DesiredCapabilities caps = new DesiredCapabilities();
+                caps.setCapability("platformName", androidDeviceInfo.getString("platformName"));
+                caps.setCapability("appium:deviceName", androidDeviceInfo.getString("deviceName"));
+                caps.setCapability("appium:appPackage", androidAppInfo.getString("appPackage"));
+                caps.setCapability("appium:appActivity", androidAppInfo.getString("appActivity"));
+                caps.setCapability("appium:automationName", androidDeviceInfo.getString("automationName"));
+                driver = new AndroidDriver(new URL(serverInfo.getString("serverUrl")), caps);
             } catch (MalformedURLException e) {
                 throw new RuntimeException("Error when connecting to Appium Server", e);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
         return driver;

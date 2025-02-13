@@ -25,21 +25,21 @@ public class BaseTest {
     private static final ThreadLocal<String> className = new ThreadLocal<>();
     public static ThreadLocal<AppiumDriver> driver = new ThreadLocal<>();
     private final static String USER_DIR = System.getProperty("user.dir");
-    public DesiredCapabilities capabilities = new DesiredCapabilities();
 
     public synchronized static AppiumDriver getDriver() {
         return driver.get();
     }
 
-//    @BeforeSuite
-//    public void setSuite(ITestContext ctx) {
-//        ReportUtility.init(ctx.getCurrentXmlTest().getSuite().getName());
-//    }
+    @BeforeSuite
+    public void setSuite() {
+        String suiteName = org.testng.Reporter.getCurrentTestResult().getTestContext().getSuite().getXmlSuite().getName();
+        ReportUtility.init(suiteName);
+    }
 
     @BeforeTest
     @Parameters("platformName")
     public void setUp(@Optional("android") String platform) {
-        initMobile(platform);
+        initDriver(platform);
         DataTest.init();
     }
 
@@ -47,13 +47,12 @@ public class BaseTest {
     public void beforeClass() {
         preCondition();
         className.set(getClass().getSimpleName());
-//        ReportUtility.getInstance().startTest(className.get());
-//        getAndroidContactListScreen().skipSync();
+        ReportUtility.getInstance().startTest(className.get());
     }
 
     @BeforeMethod
     public void setUpBeforeMethod(Method method) {
-//        ReportUtility.getInstance().log(LogStatus.INFO, "<b>Start method: " + method.getName() + "</b>");
+        ReportUtility.getInstance().log(LogStatus.INFO, "<b>Start method: " + method.getName() + "</b>");
     }
 
     @AfterMethod
@@ -82,7 +81,7 @@ public class BaseTest {
         }
     }
 
-    private void initMobile(String platform) {
+    private void initDriver(String platform) {
         if (platform.equalsIgnoreCase("android")) {
             driver.set(AndroidDriverManager.getDriver());
         } else if (platform.equalsIgnoreCase("ios")) {

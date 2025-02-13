@@ -1,0 +1,28 @@
+{
+  "deviceInfo": {
+    "android": {
+      "platformName": "Android",
+      "deviceName": "emulator-5554",
+      "automationName": "UiAutomator2"
+    },
+    "ios": {
+      "platformName": "iOS",
+      "deviceName": "iPhone 16 Pro",
+      "platformVersion": "18.1",
+      "automationName": "XCUITest",
+      "udid": "26956273-C299-49B7-9FE2-8D58751BDD71"
+    }
+  },
+  "appInfo": {
+    "android": {
+      "appPackage": "com.google.android.contacts",
+      "appActivity": "com.android.contacts.activities.PeopleActivity"
+    },
+    "ios": {
+      "bundleId": "com.apple.MobileAddressBook"
+    }
+  },
+  "serverInfo": {
+    "serverUrl": "http://127.0.0.1:4723/"
+  }
+}

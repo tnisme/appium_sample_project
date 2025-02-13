@@ -1,8 +1,12 @@
 package com.example.Dirvers;
 
 import io.appium.java_client.ios.IOSDriver;
+import org.apache.commons.io.FileUtils;
+import org.json.JSONObject;
 import org.openqa.selenium.remote.DesiredCapabilities;
 
+import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -12,17 +16,25 @@ public class IOSDriverManager {
     public static IOSDriver getDriver() {
         if (driver == null) {
             try {
-                DesiredCapabilities caps = new DesiredCapabilities();
-                caps.setCapability("platformName", "iOS");
-                caps.setCapability("appium:deviceName", "iPhone 16 Pro");
-                caps.setCapability("appium:platformVersion", "18.1");
-                caps.setCapability("appium:automationName", "XCUITest");
-                caps.setCapability("appium:bundleId", "com.apple.MobileAddressBook");
-                caps.setCapability("appium:udid", "26956273-C299-49B7-9FE2-8D58751BDD71");
+                File file = new File(System.getProperty("user.dir") + File.separator + "environment.json");
+                String content = FileUtils.readFileToString(file, "utf-8");
+                JSONObject env = new JSONObject(content);
+                JSONObject iosDeviceInfo = env.getJSONObject("deviceInfo").getJSONObject("ios");
+                JSONObject iosAppInfo = env.getJSONObject("appInfo").getJSONObject("ios");
+                JSONObject serverInfo = env.getJSONObject("serverInfo");
 
-                driver = new IOSDriver(new URL("http://127.0.0.1:4723/"), caps);
+                DesiredCapabilities caps = new DesiredCapabilities();
+                caps.setCapability("platformName", iosDeviceInfo.getString("platformName"));
+                caps.setCapability("appium:deviceName", iosDeviceInfo.getString("deviceName"));
+                caps.setCapability("appium:platformVersion", iosDeviceInfo.getString("platformVersion"));
+                caps.setCapability("appium:automationName", iosDeviceInfo.getString("automationName"));
+                caps.setCapability("appium:bundleId", iosAppInfo.getString("bundleId"));
+                caps.setCapability("appium:udid", iosDeviceInfo.getString("udid"));
+                driver = new IOSDriver(new URL(serverInfo.getString("serverUrl")), caps);
             } catch (MalformedURLException e) {
                 throw new RuntimeException("Error when connecting to Appium Server", e);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
         return driver;

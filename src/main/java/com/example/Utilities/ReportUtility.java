@@ -20,7 +20,7 @@ public class ReportUtility {
     private int ftpPort;
 
     private ReportUtility(String suiteName) {
-        String reportName = "Asics" + suiteName + ".html";
+        String reportName = suiteName + ".html";
         report = new ExtentReports(USER_DIR + File.separator + "test-output" + File.separator + "report" + File.separator + reportName);
         report.loadConfig(new File(USER_DIR + File.separator + "extent-config.xml"));
     }
